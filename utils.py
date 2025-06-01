@@ -32,3 +32,45 @@ def generate_random_drones(num_drones):
         start_pos = (random.uniform(0, 100), random.uniform(0, 100))
         drones.append(Drone(id=i, maksagırlık=5.0, battery=10000, speed=10.0, başlangıçpozisyonu=start_pos))
     return drones
+
+
+import json
+from data_classes import Drone, DeliveryPoint, NoFlyZone
+
+def load_dataset(filepath):
+    with open(filepath, 'r') as f:
+        data = json.load(f)
+    
+    drones = [
+        Drone(
+            id=d["id"],
+            maksagırlık=d["max_weight"],
+            battery=d["battery"],
+            speed=d["speed"],
+            başlangıçpozisyonu=tuple(d["start_pos"])
+        )
+        for d in data["drones"]
+    ]
+    
+    deliveries = [
+        DeliveryPoint(
+            id=d["id"],
+            pos=tuple(d["pos"]),
+            ağırlık=d["weight"],
+            öncelik=d["priority"],
+            saataralıgı=(str(d["time_window"][0]), str(d["time_window"][1]))
+        )
+        for d in data["deliveries"]
+    ]
+    
+    noflyzones = [
+        NoFlyZone(
+            id=z["id"],
+            koordinat=[tuple(coord) for coord in z["coordinates"]],
+            aktifzaman=(str(z["active_time"][0]), str(z["active_time"][1]))
+        )
+        for z in data["no_fly_zones"]
+    ]
+    
+    return drones, deliveries, noflyzones
+
