@@ -1,0 +1,34 @@
+I. GİRİŞ
+Bu projede, bir lojistik firmasının farklı ağırlık ve öncelik seviyelerine sahip paketleri çok sayıda drone kullanarak hızlı ve verimli bir şekilde ulaştırması hedeflenmiştir. Çalışmamızda, enerji limiti, taşıma kapasitesi, uçuşa yasak bölgeler gibi statik ve dinamik kısıtlar altında çalışan bir rota planlama sistemi tasarladık. Geliştirdiğimiz algoritma, gerçek zamanlı koşullarda drone filo yönetimi için uygun bir optimizasyon sunmayı amaçlamaktadır.
+
+II. YÖNTEM
+A. Veri Yapılarının Oluşturulması
+Projeye başlarken sistemdeki temel aktörleri — drone’lar, teslimat noktaları ve uçuşa yasak bölgeleri — temsil edecek veri yapılarını tanımladık. Bu yapılar Python programlama dilinde, @dataclass dekoratörü kullanılarak oluşturulmuştur.
+
+Dataclass tercih etmemizin temel nedeni, sadece veri tutan sınıflar için __init__, __repr__ gibi metodları tekrar tekrar yazmak yerine bu işlemleri Python’un otomatik olarak bizim yerimize yapmasıdır. Böylece kod daha okunabilir ve modüler hale gelmiştir.
+
+Örneğin bir drone sınıfımız şu şekilde tanımlanmıştır:
+@dataclass
+class Drone:
+    id: int
+    max_weight: float
+    battery: int
+    speed: float
+    start_pos: Tuple[float, float]
+
+B. Rastgele Test Verisi Üretimi
+Algoritmalarımızı test edebilmek adına farklı senaryolara uygun şekilde rastgele veri üretimi yapan bir modül geliştirdik. Bu modül aracılığıyla, farklı sayıda drone, teslimat noktası ve uçuşa yasak bölgeyi programatik olarak üretebiliyoruz.
+
+Her veri üretici fonksiyonumuz, ilgili sınıftan mantıklı aralıklarda rastgele nesneler oluşturmakta ve test ortamımızın dinamikliğini artırmaktadır. Örneğin:
+def generate_drones(n): ...
+def generate_delivery_points(n): ...
+def generate_no_fly_zones(n): ...
+
+C. A* Algoritması ile Rota Planlama
+Rota planlama aşamasında, yol maliyetine teslimat önceliğini ve ağırlığını dahil edebileceğimiz bir algoritma gerektiği için A* algoritmasını tercih ettik. A* algoritması, başlangıç noktasından hedefe giderken en uygun yolu bulmakta etkilidir ve tahmin fonksiyonunu (heuristic) özelleştirmeye olanak tanır.
+
+Algoritmada kullandığımız maliyet fonksiyonu şu şekildedir:
+cost = mesafe * ağırlık + (6 - öncelik) * 100
+Bu sayede yüksek öncelikli teslimatlar için bir ceza tanımlanmış ve algoritmanın bu teslimatlara öncelik vermesi sağlanmıştır.
+
+Henüz uçuşa yasak bölgeler algoritma içine tam entegre edilmemiştir; bu entegrasyon bir sonraki adım olarak planlanmaktadır. Bu kapsamda poligon çakışması ve zaman aralığı kontrolü uygulanacaktır.

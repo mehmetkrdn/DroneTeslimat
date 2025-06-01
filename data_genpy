@@ -1,0 +1,36 @@
+import random #dataclasstta olışan verilere değer atama.
+from data_classes import Drone, DeliveryPoint, NoFlyZone
+
+def generate_drones(n):
+    return [
+        Drone(
+            id=i,
+            maksagırlık=round(random.uniform(1.0, 5.0), 2),
+            battery=random.randint(1000, 5000),
+            speed=round(random.uniform(5.0, 15.0), 2),
+            başlangıçpozisyonu=(random.randint(0, 100), random.randint(0, 100))
+        )
+        for i in range(n)
+    ]
+
+def generate_delivery_points(n):
+    return [
+        DeliveryPoint(
+            id=i,
+            pos=(random.randint(0, 100), random.randint(0, 100)),
+            ağırlık=round(random.uniform(0.5, 3.0), 2),
+            öncelik=random.randint(1, 5),
+            saataralıgı=("09:00", "11:00")
+        )
+        for i in range(n)
+    ]
+
+def generate_no_fly_zones(n):
+    return [
+        NoFlyZone(
+            id=i,
+            koordinat=[(random.randint(0, 100), random.randint(0, 100)) for _ in range(4)],
+            aktifzaman=("09:30", "11:00")
+        )
+        for i in range(n)
+    ]
